@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Reading Library</title>
+<style>
+  :root{--bg:#fdf6ec;--ink:#2b2440}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
+  body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  header{background:linear-gradient(135deg,#7c4dff,#4527a0);color:#fff;padding:34px 20px 30px;text-align:center}
+  header h1{margin:0 0 8px;font-size:30px}
+  header p{margin:0;opacity:.92;font-size:16px}
+  main{max-width:1180px;margin:0 auto;padding:26px 16px 80px}
+  .sec{font-size:24px;margin:30px 0 16px;padding-bottom:8px;border-bottom:3px solid #e3d7f5;display:flex;align-items:center;gap:10px}
+  .sec .em{font-size:28px}
+  /* big, kid-friendly tap targets: 2 per row on phones, more on wide screens */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px}
+  @media(min-width:560px){.grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:22px}}
+  .book{background:#fff;border-radius:18px;overflow:hidden;text-decoration:none;color:inherit;
+        box-shadow:0 4px 14px rgba(60,40,110,.14);display:flex;flex-direction:column;
+        transition:transform .12s ease,box-shadow .12s ease;border:3px solid transparent}
+  .book:active{transform:scale(.96)}
+  @media(hover:hover){.book:hover{transform:translateY(-5px);box-shadow:0 12px 28px rgba(60,40,110,.24);border-color:#b39ddb}}
+  .book .cov{aspect-ratio:420/594;background:#efe7fa;overflow:hidden}
+  .book .cov img{width:100%;height:100%;object-fit:cover;display:block}
+  .book .cap{padding:12px 12px 15px;text-align:center}
+  .book .cap b{display:block;font-size:18px;line-height:1.25}
+  .book .cap span{display:block;margin-top:4px;font-size:13px;color:#8a7fb0;font-weight:700;letter-spacing:.04em}
+  footer{text-align:center;color:#9a90b8;font-size:13px;padding:0 20px 40px}
+  /* access gate */
+  #gate{position:fixed;inset:0;z-index:100;background:linear-gradient(135deg,#7c4dff,#311b66);display:none;align-items:center;justify-content:center;padding:20px}
+  #gate .gbox{background:#fff;border-radius:20px;padding:32px 26px;width:min(360px,92vw);text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.4)}
+  #gate h2{margin:0 0 18px;font-size:22px;color:#5e35b1}
+  #gate input{width:100%;font-size:26px;text-align:center;letter-spacing:8px;padding:14px;border:2px solid #d6c8f0;border-radius:12px;outline:none}
+  #gate button{width:100%;margin-top:16px;font-size:18px;font-weight:800;color:#fff;background:#5e35b1;border:none;border-radius:12px;padding:14px;cursor:pointer}
+  #gate .gerr{color:#e0533d;font-size:14px;height:18px;margin-top:10px}
+</style></head>
+<body>
+<header><h1>📚 My Reading Library</h1><p>Tap a book to read, listen &amp; watch</p></header>
+<main id="app"></main>
+<footer>Read · Listen · Watch — one happy bookshelf.</footer>
+<div id="gate"><div class="gbox"><h2>🔒 Enter code</h2>
+  <input id="gpin" type="password" inputmode="numeric" autocomplete="off" placeholder="••••••">
+  <button id="gbtn">Enter</button><div class="gerr" id="gerr"></div></div></div>
+<script>
+  // ---- book catalog: direct links into each reader (same origin → shared login) ----
+  var L="https://kidolabs.github.io/luma7/", V="https://kidolabs.github.io/verda/";
+  var SECTIONS=[
+    {title:"Reading for Vocabulary",em:"📖",books:[
+      {t:"Level A",img:L+"covers/level-a.jpg",url:L+"level-a/index.html"},
+      {t:"Level B",img:L+"covers/level-b.jpg",url:L+"level-b/index.html"},
+      {t:"Level C",img:L+"covers/level-c.jpg",url:L+"level-c/index.html"},
+      {t:"Level D",img:L+"covers/level-d.jpg",url:L+"level-d/index.html"}
+    ]},
+    {title:"Science",em:"🔬",books:[
+      {t:"Science 1",img:V+"covers/science-1.jpg",url:V+"science-1/index.html"},
+      {t:"Science 2",img:V+"covers/science-2.jpg",url:V+"science-2/index.html"},
+      {t:"Science 3",img:V+"covers/science-3.jpg",url:V+"science-3/index.html"},
+      {t:"Science 4",img:V+"covers/science-4.jpg",url:V+"science-4/index.html"}
+    ]},
+    {title:"Social Studies",em:"🌎",books:[
+      {t:"Social Studies 1",img:V+"covers/social-studies-1.jpg",url:V+"social-studies-1/index.html"},
+      {t:"Social Studies 2",img:V+"covers/social-studies-2.jpg",url:V+"social-studies-2/index.html"},
+      {t:"Social Studies 3",img:V+"covers/social-studies-3.jpg",url:V+"social-studies-3/index.html"},
+      {t:"Social Studies 4",img:V+"covers/social-studies-4.jpg",url:V+"social-studies-4/index.html"}
+    ]}
+  ];
+  var html="";
+  SECTIONS.forEach(function(s){
+    html+='<h2 class="sec"><span class="em">'+s.em+'</span>'+s.title+'</h2><div class="grid">';
+    s.books.forEach(function(b){
+      html+='<a class="book" href="'+b.url+'"><div class="cov"><img loading="lazy" src="'+b.img+'" alt="'+b.t+'"></div>'
+           +'<div class="cap"><b>'+b.t+'</b></div></a>';
+    });
+    html+='</div>';
+  });
+  document.getElementById('app').innerHTML=html;
+
+  // ---- inspection guard (consistent with the libraries) ----
+  (function(){function bye(){location.replace('https://www.google.com');}
+    document.addEventListener('keydown',function(e){var k=(e.key||'').toUpperCase();
+      if(e.keyCode===123||((e.ctrlKey||e.metaKey)&&e.shiftKey&&(k==='I'||k==='J'||k==='C'))||((e.ctrlKey||e.metaKey)&&k==='U')){e.preventDefault();bye();}});
+    document.addEventListener('contextmenu',function(e){e.preventDefault();});
+    if(matchMedia('(pointer:fine)').matches){setInterval(function(){if(window.outerWidth-window.innerWidth>220||window.outerHeight-window.innerHeight>220)bye();},1000);}})();
+
+  // ---- access gate: one code unlocks every library (same origin shares localStorage) ----
+  (function(){var g=document.getElementById('gate'),i=document.getElementById('gpin'),e=document.getElementById('gerr');
+    if(localStorage.getItem('hub_ok')==='1')return;
+    g.style.display='flex';document.body.style.overflow='hidden';i.focus();
+    function go(){if(i.value===atob('MTYwOTI1')){
+        localStorage.setItem('hub_ok','1');localStorage.setItem('rv_ok','1');localStorage.setItem('atr_ok','1');
+        g.style.display='none';document.body.style.overflow='';
+      }else{e.textContent='Wrong code';i.value='';i.focus();}}
+    document.getElementById('gbtn').onclick=go;
+    i.addEventListener('keydown',function(ev){if(ev.key==='Enter')go();});})();
+</script>
+</body></html>
