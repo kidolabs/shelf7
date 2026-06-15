@@ -43,7 +43,7 @@
   <button id="gbtn">Enter</button><div class="gerr" id="gerr"></div></div></div>
 <script>
   // ---- book catalog: direct links into each reader (same origin → shared login) ----
-  var L="https://kidolabs.github.io/luma7/", V="https://kidolabs.github.io/verda/";
+  var L="https://kidolabs.github.io/luma7/", V="https://kidolabs.github.io/verda/", T="https://kidolabs.github.io/rivo8/";
   var SECTIONS=[
     {title:"Reading for Vocabulary",em:"📖",books:[
       {t:"Level A",img:L+"covers/level-a.jpg",url:L+"level-a/index.html"},
@@ -62,6 +62,9 @@
       {t:"Social Studies 2",img:V+"covers/social-studies-2.jpg",url:V+"social-studies-2/index.html"},
       {t:"Social Studies 3",img:V+"covers/social-studies-3.jpg",url:V+"social-studies-3/index.html"},
       {t:"Social Studies 4",img:V+"covers/social-studies-4.jpg",url:V+"social-studies-4/index.html"}
+    ]},
+    {title:"Timed Reading for Fluency",em:"⏱️",books:[
+      {t:"Book 1",img:T+"covers/trff-1.jpg",url:T+"trff-1/index.html"}
     ]}
   ];
   var html="";
@@ -87,7 +90,7 @@
     if(localStorage.getItem('hub_ok')==='1')return;
     g.style.display='flex';document.body.style.overflow='hidden';i.focus();
     function go(){if(i.value===atob('MTYwOTI1')){
-        localStorage.setItem('hub_ok','1');localStorage.setItem('rv_ok','1');localStorage.setItem('atr_ok','1');
+        localStorage.setItem('hub_ok','1');localStorage.setItem('rv_ok','1');localStorage.setItem('atr_ok','1');localStorage.setItem('trff_ok','1');
         g.style.display='none';document.body.style.overflow='';
       }else{e.textContent='Wrong code';i.value='';i.focus();}}
     document.getElementById('gbtn').onclick=go;
